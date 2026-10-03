@@ -4,7 +4,8 @@ import {
   RotateCcw, 
   ChevronDown, 
   ChevronUp,
-  History
+  History,
+  Trash2
 } from 'lucide-react';
 import { ReportCardModal } from './ReportCardModal';
 
@@ -30,6 +31,22 @@ export function AttemptsHistorySection() {
   useEffect(() => {
     fetchSubmissions();
   }, []);
+
+  const handleClearHistory = async (e) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to clear all exam history records? This cannot be undone.')) {
+      try {
+        const res = await fetch('/api/submissions', { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          setSubmissions([]);
+        }
+      } catch (err) {
+        console.error('Failed to clear history:', err);
+        alert('Failed to clear history.');
+      }
+    }
+  };
 
   if (submissions.length === 0 && !loading) {
     return null;
@@ -96,6 +113,26 @@ export function AttemptsHistorySection() {
               title="Refresh attempts list"
             >
               <RotateCcw size={13} /> Refresh
+            </button>
+
+            <button
+              onClick={handleClearHistory}
+              style={{
+                background: 'none',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#ef4444',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                fontSize: '0.78rem',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '4px',
+                transition: 'all 0.15s ease'
+              }}
+              title="Clear all exam attempt history"
+            >
+              <Trash2 size={13} /> Clear History
             </button>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--secondary-blue)', fontSize: '0.84rem', fontWeight: 600 }}>
